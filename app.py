@@ -34,11 +34,11 @@ def schedule_cleanup():
         for root, _, files in os.walk(output_dir):
             for file in files:
                 file_path = os.path.join(root, file)
-                # Delete files older than 15 minutes
-                if os.path.isfile(file_path) and now - datetime.fromtimestamp(os.path.getctime(file_path)) > timedelta(minutes=15):
+                # Delete files older than 1 minute
+                if os.path.isfile(file_path) and now - datetime.fromtimestamp(os.path.getctime(file_path)) > timedelta(minutes=1):
                     os.remove(file_path)
                     print(f"Deleted: {file_path}")
-        time.sleep(100)  # Run cleanup every 15 minutes
+        time.sleep(30)  # Run cleanup every 30 seconds
 
 # Start the cleanup scheduler in a separate thread
 threading.Thread(target=schedule_cleanup, daemon=True).start()
@@ -77,7 +77,6 @@ def delete_all():
     session['url_titles'] = []
     session.modified = True
     return redirect(url_for("index"))
-
 
 @app.route("/download_all", methods=["POST"])
 def download_all():
