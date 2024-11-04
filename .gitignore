@@ -1,2 +1,4 @@
 .venv
-./po-token
+build
+dist
+app.spec
