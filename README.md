@@ -1,6 +1,3 @@
-Here's a `README.md` for your app, including emojis and instructions on building and using the standalone executable.
-
-````markdown
 # 🎶 YouTube MP3 Downloader Web App 🎶
 
 This app provides a simple web interface to download YouTube videos as MP3 files! With a few clicks, you can add multiple YouTube URLs, manage your download list, and save all your favorite songs in one place.
@@ -22,7 +19,6 @@ This app provides a simple web interface to download YouTube videos as MP3 files
   ```bash
   pip install flask requests pytubefix
   ```
-````
 
 ### How to Build the Standalone Executable
 
@@ -71,8 +67,3 @@ If you encounter any issues:
 ## 📄 License
 
 This project is licensed under the MIT License. Enjoy your music! 🎵
-
-```
-
-This README provides a quick overview, setup instructions, and usage guidelines, with clear steps for both building and running the app. Let me know if you'd like further customization!
-```
