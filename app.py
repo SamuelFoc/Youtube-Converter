@@ -7,11 +7,23 @@ import zipfile
 import threading
 import time
 from datetime import datetime, timedelta
+import sys
+import tempfile
+import webbrowser
 
-app = Flask(__name__)
+# Modify paths for PyInstaller packaging
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    # Use a writable temporary directory for downloads
+    output_dir = os.path.join(tempfile.gettempdir(), "downloads")
+else:
+    template_folder = 'templates'
+    output_dir = './downloads'
+
+app = Flask(__name__, template_folder=template_folder)
 app.secret_key = os.urandom(24)  # Secret key for session
 
-output_dir = "./downloads"
+# Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0'}
 
@@ -121,4 +133,7 @@ def download_zip():
     return send_file(zip_path, as_attachment=True, download_name="all_downloads.zip")
 
 if __name__ == "__main__":
+    # Start Flask server and open the default web browser to localhost:5000
+    threading.Timer(1.25, lambda: webbrowser.open("http://localhost:5000")).start()
+    app.run(debug=True)
     app.run(debug=True)
