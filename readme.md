@@ -1,0 +1,1 @@
+pyinstaller --onefile --add-data "templates/index.html;templates" --add-data "downloads;downloads" --hidden-import pyexpat --hidden-import pkg_resources.py2_warn --paths "C:\Python312\DLLs" --paths "C:\Python312\Lib\site-packages" app.py
