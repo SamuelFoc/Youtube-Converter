@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Manager</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Simple loading spinner */
+      #loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <script>
+      async function fetchProgress() {
+        const response = await fetch("/progress");
+        const data = await response.json();
+
+        // Check if the download has completed
+        if (data.completed) {
+          clearInterval(progressInterval); // Stop further updates
+          document.getElementById("loader").style.display = "none"; // Hide loader
+          alert("Sťahovanie ukončené! Prajete si stiahnuť súbor?");
+          window.location.href = "/download_zip"; // Trigger zip download
+        }
+      }
+
+      let progressInterval;
+
+      function startProgressUpdates() {
+        document.getElementById("loader").style.display = "block"; // Show loader
+        progressInterval = setInterval(fetchProgress, 1000); // Update every second
+      }
+
+      async function handleDownloadAll(event) {
+        event.preventDefault(); // Prevent form from submitting traditionally
+        startProgressUpdates(); // Start the loader and progress updates
+
+        try {
+          const response = await fetch("/download_all", {
+            method: "POST",
+          });
+          if (response.ok) {
+            console.log("Download started...");
+          } else {
+            console.error("Failed to start download");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-xl mx-auto bg-white rounded-lg shadow-lg p-6">
+      <h1 class="text-2xl font-bold mb-4 text-gray-800 text-center">
+        Zoznam Piesní na Stiahnutie z YouTube
+      </h1>
+
+      <!-- Form to add a new URL -->
+      <form action="/" method="POST" class="mb-6">
+        <div class="flex">
+          <input
+            type="text"
+            name="url"
+            placeholder="Vložte Adresu Videa"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            class="w-44 px-4 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Pridať Video
+          </button>
+        </div>
+      </form>
+
+      <!-- Conditional "Delete All" button -->
+      {% if urls %}
+      <form action="{{ url_for('delete_all') }}" method="POST" class="mb-4">
+        <button
+          type="submit"
+          class="w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Vymazať všetky piesne
+        </button>
+      </form>
+      {% endif %}
+
+      <!-- List of URLs with delete buttons -->
+      <ul class="space-y-2">
+        {% for url in urls %}
+        <li
+          class="flex items-center justify-between p-3 bg-gray-700 rounded-md shadow-sm"
+        >
+          <span class="text-white">{{ url }}</span>
+          <form
+            action="{{ url_for('delete_url', url_index=loop.index0) }}"
+            method="POST"
+          >
+            <button
+              type="submit"
+              class="text-red-500 hover:text-red-600 focus:outline-none"
+            >
+              Delete
+            </button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Loader display -->
+      <div class="w-full flex items-center justify-center p-4">
+        <div id="loader" style="display: none"></div>
+      </div>
+
+      <!-- Download All button with loader -->
+      <form id="download-form" onsubmit="handleDownloadAll(event)">
+        <button
+          type="submit"
+          class="w-full py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Download All
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
